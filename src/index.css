@@ -1,0 +1,178 @@
+/* src/index.css */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cl-primary:    #A855F7;
+  --cl-secondary:  #6B21A8;
+  --cl-accent:     #3B0F6E;
+  --cl-bg:         #0D0118;
+  --cl-surface:    #1E0A35;
+  --cl-text:       #EDE8FF;
+  --cl-muted:      #7C5B9E;
+  --cl-border:     #2D1550;
+  --cl-coral:      #FF6B6B;
+  --cl-mint:       #06D6A0;
+  --cl-gold:       #FBBF24;
+  --cl-blue:       #60A5FA;
+  --font:          'Plus Jakarta Sans', sans-serif;
+  --sidebar-w:     260px;
+  --header-h:      62px;
+  --nav-h:         66px;
+  --content-max:   680px;
+  --radius-sm:     8px;
+  --radius-md:     14px;
+  --radius-lg:     20px;
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background: var(--cl-bg);
+  color: var(--cl-text);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+input, textarea, button, select { font-family: var(--font); }
+button { cursor: pointer; }
+a { color: inherit; text-decoration: none; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--cl-border); border-radius: 4px; }
+
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #2D1550 25%, #3B1F60 50%, #2D1550 75%);
+  background-size: 1200px 100%;
+  animation: shimmer 1.6s infinite;
+  border-radius: 8px;
+}
+
+/* Spin */
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Fade in */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.25s ease forwards; }
+
+/* Pulse glow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 8px #A855F760; }
+  50%       { box-shadow: 0 0 20px #A855F7A0; }
+}
+.pulse-glow { animation: pulseGlow 2s infinite; }
+
+/* ── Layout ── */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Desktop sidebar */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  position: fixed;
+  top: 0; left: 0;
+  height: 100vh;
+  background: var(--cl-surface);
+  border-right: 1px solid var(--cl-border);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  overflow-y: auto;
+}
+
+/* Desktop main content */
+.main-content {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-container {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px 20px 40px;
+}
+
+/* Right panel (desktop only) */
+.right-panel {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Desktop feed layout */
+.feed-layout {
+  display: flex;
+  gap: 0;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px 20px;
+}
+
+.feed-main { flex: 1; min-width: 0; }
+
+/* Mobile nav (hidden on desktop) */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: var(--cl-surface);
+  border-top: 1px solid var(--cl-border);
+  z-index: 100;
+  padding: 8px 0 12px;
+}
+
+/* Mobile header */
+.mobile-header {
+  display: none;
+  position: sticky;
+  top: 0;
+  background: var(--cl-surface);
+  border-bottom: 1px solid var(--cl-border);
+  z-index: 50;
+  padding: 13px 16px;
+}
+
+/* ── Responsive breakpoints ── */
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+
+  .sidebar      { display: none !important; }
+  .main-content { margin-left: 0; padding-bottom: var(--nav-h); }
+  .mobile-nav   { display: flex; }
+  .mobile-header{ display: flex; }
+  .right-panel  { display: none; }
+  .feed-layout  { padding: 12px 12px 0; flex-direction: column; }
+  .page-container { padding: 14px 12px 30px; }
+
+  .desktop-only { display: none !important; }
+}
+
+@media (min-width: 769px) {
+  .mobile-only { display: none !important; }
+}
+
+@media (min-width: 769px) and (max-width: 1100px) {
+  .right-panel { display: none; }
+  .feed-layout { max-width: 760px; }
+}
