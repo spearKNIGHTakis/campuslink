@@ -1,7 +1,4 @@
 // src/App.jsx
-import { checkAppConfig } from './utils/checkEnv'
-
-checkAppConfig()
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { AuthProvider } from '@/hooks/useAuth'
@@ -25,6 +22,10 @@ import Groups      from '@/pages/Groups'
 import Events      from '@/pages/Events'
 import Messages    from '@/pages/Messages'
 import Admin       from '@/pages/Admin'
+import UserProfile from '@/pages/UserProfile'
+import GetVerified    from '@/pages/GetVerified'
+import Explore        from '@/pages/Explore'
+import Notifications  from '@/pages/Notifications'
 
 // New pages
 import Search      from '@/pages/Search'
@@ -78,12 +79,15 @@ export default function App() {
         {/* ── Core app ── */}
         <Route path="/feed"        element={<Shell><Feed /></Shell>} />
         <Route path="/profile"     element={<Shell><Profile /></Shell>} />
-        <Route path="/profile/:id" element={<Shell><Profile /></Shell>} />
+        <Route path="/profile/:id" element={<Shell><UserProfile /></Shell>} />
         <Route path="/friends"     element={<Shell><Friends /></Shell>} />
         <Route path="/groups"      element={<Shell><Groups /></Shell>} />
         <Route path="/events"      element={<Shell><Events /></Shell>} />
         <Route path="/messages"    element={<Shell><Messages /></Shell>} />
         <Route path="/admin"       element={<PrivateRoute><Admin /></PrivateRoute>} />
+        <Route path="/get-verified"   element={<PrivateRoute><GetVerified /></PrivateRoute>} />
+        <Route path="/explore"         element={<Shell><Explore /></Shell>} />
+        <Route path="/notifications"   element={<Shell><Notifications /></Shell>} />
 
         {/* ── New features ── */}
         <Route path="/search"      element={<Shell><Search /></Shell>} />

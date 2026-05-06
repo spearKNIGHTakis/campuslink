@@ -136,13 +136,3 @@ export function uploadVideo(file, folder, onProgress) {
 export async function uploadPostVideo(uid, file, onProgress) {
   return uploadVideo(file, `postVideos/${uid}`, onProgress)
 }
-
-// Ensure the cloud name is correctly retrieved from your environment variables
-const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-
-if (!cloudName) {
-    console.error("Cloudinary Cloud Name is undefined. Check your .env file.");
-}
-
-const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-// Proceed with fetch or XMLHttpRequest using the validated url

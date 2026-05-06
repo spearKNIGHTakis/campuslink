@@ -9,6 +9,8 @@ import {
 } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { B } from '@/lib/theme'
+import { runFullSeed } from '@/lib/seeder'
+import { awardPoints } from '@/lib/reputation'
 import toast from 'react-hot-toast'
 
 // ── Design tokens (admin-specific, desktop-first) ─────────────────────────────
@@ -225,6 +227,21 @@ export default function Admin() {
     }
   }, [profile])
 
+  const [seeding, setSeeding] = useState(false)
+  const [seeded, setSeeded]   = useState(false)
+
+  async function handleSeed() {
+    if (!window.confirm('Seed official accounts and sample posts? This only needs to be done once.')) return
+    setSeeding(true)
+    try {
+      const result = await runFullSeed()
+      setSeeded(true)
+      toast.success(`Seeded ${result.accounts} accounts and ${result.posts} posts!`)
+      loadData()
+    } catch (e) { toast.error('Seeding failed: ' + e.message) }
+    finally { setSeeding(false) }
+  }
+
   const loadData = useCallback(async () => {
     setLoading(true)
     try {
@@ -277,8 +294,12 @@ export default function Admin() {
   async function approveUser(uid) {
     setActioning(uid)
     try {
-      await updateDoc(doc(db, 'users', uid), { status: 'approved', updatedAt: serverTimestamp() })
+      await updateDoc(doc(db, 'users', uid), { status: 'approved', isVerified: true, updatedAt: serverTimestamp() })
       await updateDoc(doc(db, 'verificationQueue', uid), { reviewed: true, reviewedAt: serverTimestamp(), decision: 'approved' })
+      await awardPoints(uid, 'RESOURCE_SHARED') // repurpose for +15, bonus separately
+      // Award +50 verification bonus directly
+      const { increment: inc } = await import('firebase/firestore')
+      await updateDoc(doc(db, 'users', uid), { reputationPoints: inc(50) })
       setQueue(q => q.filter(i => i.id !== uid))
       setUsers(u => u.map(x => x.id === uid ? { ...x, status: 'approved' } : x))
       setStats(s => ({ ...s, approved: s.approved + 1, pending: s.pending - 1 }))
@@ -387,9 +408,16 @@ export default function Admin() {
             <div style={{ fontSize: 24, fontWeight: 800, color: A.text }}>{TABS.find(t => t.id === tab)?.label}</div>
             <div style={{ fontSize: 13, color: A.muted, marginTop: 2 }}>KNUST Pilot · CampusLink Admin</div>
           </div>
-          <button onClick={loadData} style={{ background: `${A.accent}15`, border: `1px solid ${A.accent}30`, borderRadius: 10, padding: '8px 16px', color: A.accent, cursor: 'pointer', fontSize: 13, fontWeight: 700, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
-            ↻ Refresh
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            {!seeded && (
+              <button onClick={handleSeed} disabled={seeding} style={{ background: `${A.green}15`, border: `1px solid ${A.green}30`, borderRadius: 10, padding: '8px 16px', color: A.green, cursor: 'pointer', fontSize: 13, fontWeight: 700, fontFamily: 'inherit' }}>
+                {seeding ? '⏳ Seeding…' : '🌱 Seed Platform'}
+              </button>
+            )}
+            <button onClick={loadData} style={{ background: `${A.accent}15`, border: `1px solid ${A.accent}30`, borderRadius: 10, padding: '8px 16px', color: A.accent, cursor: 'pointer', fontSize: 13, fontWeight: 700, fontFamily: 'inherit', display: 'flex', alignItems: 'center', gap: 6 }}>
+              ↻ Refresh
+            </button>
+          </div>
         </div>
 
         {/* ── OVERVIEW ── */}

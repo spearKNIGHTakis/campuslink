@@ -1,20 +1,13 @@
 // src/hooks/useAuth.jsx
 import { createContext, useContext, useEffect, useState } from 'react'
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  updateProfile,
-  onAuthStateChanged,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut, sendEmailVerification, sendPasswordResetEmail,
+  updateProfile, onAuthStateChanged,
+  GoogleAuthProvider, signInWithRedirect, getRedirectResult,
 } from 'firebase/auth'
 import { auth } from '@/lib/firebase'
-import { createUserProfile, getUserProfile } from '@/lib/db'
+import { createUserProfile, getUserProfile, updateUserProfile } from '@/lib/db'
 
 const AuthContext = createContext(null)
 
@@ -28,11 +21,11 @@ export function AuthProvider({ children }) {
       setUser(firebaseUser)
       if (firebaseUser) {
         let p = await getUserProfile(firebaseUser.uid)
-        // Handle Google redirect result — create profile if new user
         if (!p) {
+          // First time — create profile and auto-approve
           await createUserProfile(firebaseUser.uid, {
             email:       firebaseUser.email,
-            displayName: firebaseUser.displayName,
+            displayName: firebaseUser.displayName || firebaseUser.email?.split('@')[0],
             photoURL:    firebaseUser.photoURL || '',
           })
           p = await getUserProfile(firebaseUser.uid)
@@ -61,11 +54,10 @@ export function AuthProvider({ children }) {
     return cred.user
   }
 
-  // ── Google Sign-In (redirect — avoids COOP popup warnings) ──────────────
+  // ── Google Sign-In ────────────────────────────────────────────────────────
   async function loginWithGoogle() {
     const provider = new GoogleAuthProvider()
     provider.setCustomParameters({ prompt: 'select_account' })
-    // Redirects away and back — profile creation handled in onAuthStateChanged
     await signInWithRedirect(auth, provider)
   }
 
@@ -85,19 +77,15 @@ export function AuthProvider({ children }) {
     }
   }
 
+  const isGoogle = user?.providerData?.[0]?.providerId === 'google.com'
+
   const value = {
-    user,
-    profile,
-    loading,
-    // Google emails are always verified by Google
-    isEmailVerified: user?.emailVerified ?? false,
+    user, profile, loading,
+    isEmailVerified: isGoogle ? true : (user?.emailVerified ?? false),
     isApproved:      profile?.status === 'approved',
-    register,
-    login,
-    loginWithGoogle,
-    logout,
-    resetPassword,
-    refreshProfile,
+    isVerified:      profile?.isVerified === true,
+    register, login, loginWithGoogle,
+    logout, resetPassword, refreshProfile,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

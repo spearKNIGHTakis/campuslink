@@ -5,6 +5,7 @@ import { updateUserProfile } from '@/lib/db'
 import { uploadProfilePhoto } from '@/lib/storage'
 import { Avatar, Btn, Card, Input, Textarea, Chip, Modal, Spinner } from '@/components/ui'
 import { B } from '@/lib/theme'
+import VerificationBanner from '@/components/ui/VerificationBanner'
 import toast from 'react-hot-toast'
 
 const INTERESTS = ['AI & ML', 'Photography', 'Chess', 'Startups', 'Open Source', 'Reading', 'Music', 'Sports', 'Gaming', 'Arts', 'Business', 'Medicine', 'Law', 'Engineering']
@@ -99,7 +100,14 @@ export default function Profile() {
           </div>
 
           <div style={{ marginTop: 10 }}>
-            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--cl-text)' }}>{profile?.displayName}</div>
+            <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--cl-text)', display: 'flex', alignItems: 'center', gap: 8 }}>
+              {profile?.displayName}
+              {profile?.isVerified && (
+                <span title="Verified Student" style={{ display: 'inline-flex', alignItems: 'center', gap: 3, fontSize: 12, color: B.mint, background: `${B.mint}15`, border: `1px solid ${B.mint}30`, borderRadius: 20, padding: '2px 8px', fontWeight: 700 }}>
+                  <i className="fa-solid fa-circle-check" style={{ fontSize: 11 }} /> Verified Student
+                </span>
+              )}
+            </div>
             <div style={{ color: 'var(--cl-muted)', fontSize: 13, marginTop: 2 }}>
               {profile?.program || 'Program not set'} {profile?.year ? `· ${profile.year}` : ''}
             </div>
@@ -124,6 +132,9 @@ export default function Profile() {
           </div>
         </div>
       </Card>
+
+      {/* Verification banner */}
+      <VerificationBanner />
 
       {/* About card */}
       <Card>

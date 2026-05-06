@@ -10,26 +10,28 @@ import { B } from '@/lib/theme'
 import { getBadge } from '@/lib/reputation'
 
 const NAV = [
-  { path: '/feed',        icon: 'home',        label: 'Home'        },
-  { path: '/search',      icon: 'search',      label: 'Search'      },
-  { path: '/friends',     icon: 'friends',     label: 'Friends'     },
-  { path: '/groups',      icon: 'groups',      label: 'Groups'      },
-  { path: '/events',      icon: 'events',      label: 'Events'      },
-  { path: '/messages',    icon: 'messages',    label: 'Messages'    },
-  { path: '/marketplace', icon: 'marketplace', label: 'Marketplace' },
-  { path: '/leaderboard', icon: 'leaderboard', label: 'Leaderboard' },
-  { path: '/assignments', icon: 'assignments', label: 'Assignments'  },
-  { path: '/gpa',         icon: 'gpa',         label: 'GPA Tracker' },
-  { path: '/studyrooms',  icon: 'studyrooms',  label: 'Study Rooms' },
-  { path: '/profile',     icon: 'profile',     label: 'Profile'     },
+  { path: '/feed',          icon: 'home',          label: 'Home'          },
+  { path: '/explore',       icon: 'explore',       label: 'Explore'       },
+  { path: '/search',        icon: 'search',        label: 'Search'        },
+  { path: '/friends',       icon: 'friends',       label: 'Friends'       },
+  { path: '/groups',        icon: 'groups',        label: 'Groups'        },
+  { path: '/events',        icon: 'events',        label: 'Events'        },
+  { path: '/messages',      icon: 'messages',      label: 'Messages'      },
+  { path: '/notifications', icon: 'notifications', label: 'Notifications' },
+  { path: '/marketplace',   icon: 'marketplace',   label: 'Marketplace'   },
+  { path: '/leaderboard',   icon: 'leaderboard',   label: 'Leaderboard'   },
+  { path: '/assignments',   icon: 'assignments',   label: 'Assignments'   },
+  { path: '/gpa',           icon: 'gpa',           label: 'GPA Tracker'   },
+  { path: '/studyrooms',    icon: 'studyrooms',    label: 'Study Rooms'   },
+  { path: '/profile',       icon: 'profile',       label: 'Profile'       },
 ]
 
 const MOBILE_NAV = [
-  { path: '/feed',     icon: 'home',     label: 'Home'     },
-  { path: '/search',   icon: 'search',   label: 'Search'   },
-  { path: '/friends',  icon: 'friends',  label: 'Friends'  },
-  { path: '/messages', icon: 'messages', label: 'Messages' },
-  { path: '/profile',  icon: 'profile',  label: 'Profile'  },
+  { path: '/feed',          icon: 'home',          label: 'Home'     },
+  { path: '/explore',       icon: 'explore',       label: 'Explore'  },
+  { path: '/friends',       icon: 'friends',       label: 'Friends'  },
+  { path: '/messages',      icon: 'messages',      label: 'Messages' },
+  { path: '/notifications', icon: 'notifications', label: 'Alerts'   },
 ]
 
 function SidebarNavItem({ item, active, unreadCount }) {
@@ -116,12 +118,12 @@ export default function AppShell({ children }) {
         {/* Nav */}
         <nav style={{ flex: 1, padding: '10px 0', overflowY: 'auto' }}>
           <div style={{ fontSize: 10, color: 'var(--cl-muted)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '8px 20px 4px' }}>Main</div>
-          {NAV.slice(0, 6).map(item => (
+          {NAV.slice(0, 8).map(item => (
             <SidebarNavItem key={item.path} item={item} active={isActive(item.path)}
               unreadCount={item.path === '/messages' ? unreadCount : 0} />
           ))}
           <div style={{ fontSize: 10, color: 'var(--cl-muted)', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', padding: '16px 20px 4px' }}>Academic</div>
-          {NAV.slice(6).map(item => (
+          {NAV.slice(8).map(item => (
             <SidebarNavItem key={item.path} item={item} active={isActive(item.path)} unreadCount={0} />
           ))}
         </nav>

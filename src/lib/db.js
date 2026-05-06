@@ -40,8 +40,8 @@ export async function createUserProfile(uid, data) {
     year:             '',
     bio:              '',
     interests:        [],
-    status:           'pending',
-    isVerified:       false,
+    status:           'approved',   // auto-approved — optional student verification available
+    isVerified:       false,        // earned separately by uploading student ID
     isAdmin:          false,
     verificationStep: 1,
     reputationPoints: 0,
@@ -94,7 +94,7 @@ export async function submitVerification(uid, studentIdURL) {
 }
 
 // ── POSTS ─────────────────────────────────────────────────────────────────────
-export async function createPost(uid, profile, content, mediaURL = '', mediaType = '', videoDuration = null) {
+export async function createPost(uid, profile, content, mediaURL = '', mediaType = '', videoDuration = null, hashtags = []) {
   const ref = await addDoc(collection(db, COLS.posts), {
     authorId:       uid,
     authorName:     profile.displayName,
@@ -107,6 +107,7 @@ export async function createPost(uid, profile, content, mediaURL = '', mediaType
     mediaURL,
     mediaType,
     videoDuration,
+    hashtags,
     likes:          [],
     likeCount:      0,
     commentCount:   0,
@@ -159,10 +160,20 @@ export function listenComments(postId, callback) {
 }
 
 // ── FRIENDS ───────────────────────────────────────────────────────────────────
-export async function sendFriendRequest(fromUid, toUid) {
+export async function sendFriendRequest(fromUid, toUid, fromProfile) {
   const id = `${fromUid}_${toUid}`
+  // Check if request already exists
+  const existing = await getDoc(doc(db, COLS.friendRequests, id))
+  if (existing.exists()) return
   await setDoc(doc(db, COLS.friendRequests, id), {
-    from: fromUid, to: toUid, status: 'pending', createdAt: serverTimestamp(),
+    from:        fromUid,
+    to:          toUid,
+    status:      'pending',
+    fromName:    fromProfile?.displayName || '',
+    fromPhoto:   fromProfile?.photoURL   || '',
+    fromProgram: fromProfile?.program    || '',
+    fromUniversity: fromProfile?.university || '',
+    createdAt:   serverTimestamp(),
   })
 }
 

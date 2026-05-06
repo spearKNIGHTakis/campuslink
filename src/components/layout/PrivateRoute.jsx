@@ -9,7 +9,7 @@ export default function PrivateRoute({ children }) {
 
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
+      <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, background: 'var(--cl-bg)' }}>
         <div style={{ fontSize: 22, fontWeight: 800 }}>
           <span style={{ color: 'var(--cl-text)' }}>Campus</span>
           <span style={{ color: B.vibrantPurple }}>Link</span>
@@ -19,17 +19,13 @@ export default function PrivateRoute({ children }) {
     )
   }
 
+  // Not logged in
   if (!user) return <Navigate to="/login" replace />
 
-  // Only enforce email verification for email/password accounts
-  // Google accounts are always verified
-  const isGoogle = user.providerData?.[0]?.providerId === 'google.com'
+  // Email/password users must verify email first
+  const isGoogle = user?.providerData?.[0]?.providerId === 'google.com'
   if (!isGoogle && !isEmailVerified) return <Navigate to="/verify-email" replace />
 
-  if (profile?.status === 'pending' && profile?.verificationStep === 1)
-    return <Navigate to="/upload-id" replace />
-  if (profile?.status === 'pending' && profile?.verificationStep === 2)
-    return <Navigate to="/pending-approval" replace />
-
+  // Everyone else gets in — no pending/approval gate anymore
   return children
 }
